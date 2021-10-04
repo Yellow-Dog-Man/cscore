@@ -78,7 +78,7 @@ namespace CSCore.Codecs.WAV
             _isDisposed = false;
             _stream = stream;
             _waveStartPosition = stream.Position;
-            _writer = new BinaryWriter(stream);
+            _writer = new BinaryWriter(stream, Encoding.UTF8, true);
             for (int i = 0; i < 44; i++)
             {
                 _writer.Write((byte) 0);
@@ -147,7 +147,7 @@ namespace CSCore.Codecs.WAV
                 switch (_waveFormat.BitsPerSample)
                 {
                     case 8:
-                        Write((byte) (byte.MaxValue * sample));
+                        Write((byte)Math.Min(byte.MaxValue, (byte.MaxValue * (sample + 1) * 0.5f)));
                         break;
                     case 16:
                         Write((short) (short.MaxValue * sample));
