@@ -268,7 +268,7 @@
     <Compile Include="Codecs\MP3\MpegVersion.cs" />
     <Compile Include="Codecs\MP3\XingHeader.cs" />
     <Compile Include="Codecs\MP3\XingHeaderFlags.cs" />
-    <Compile Include="Codecs\OGG\VorbisSource.cs" />
+    <Compile Include="Codecs\OGG\NVorbisSource.cs" />
     <Compile Include="Codecs\WMA\WmaDecoder.cs" />
     <Compile Include="CoreAudioAPI\AudioCaptureClient.cs" />
     <Compile Include="CoreAudioAPI\AudioClientBufferFlags.cs" />

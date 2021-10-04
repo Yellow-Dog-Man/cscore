@@ -13,6 +13,7 @@ using CSCore.Codecs.MP2;
 using CSCore.Codecs.MP3;
 using CSCore.Codecs.WAV;
 using CSCore.Codecs.WMA;
+using CSCore.Codecs.OGG;
 using CSCore.MediaFoundation;
 
 namespace CSCore.Codecs
@@ -61,6 +62,8 @@ namespace CSCore.Codecs
                 "flac", "fla"));
             Register("aiff", new CodecFactoryEntry(s => new AiffReader(s),
                 "aiff", "aif", "aifc"));
+            Register("ogg-vorbis", new CodecFactoryEntry(s => new NVorbisSource(s).ToWaveSource(),
+               "ogg"));
 
             if (AacDecoder.IsSupported)
             {

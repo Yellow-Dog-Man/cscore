@@ -7,7 +7,7 @@ using CSCore;
 using CSCore.Codecs;
 using NVorbis;
 
-namespace CSCore.Codecs.External
+namespace CSCore.Codecs.OGG
 {
     public sealed class NVorbisSource : ISampleSource
     {
