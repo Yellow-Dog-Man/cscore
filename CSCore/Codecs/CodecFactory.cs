@@ -23,7 +23,7 @@ namespace CSCore.Codecs
     /// </summary>
     public class CodecFactory
     {
-// ReSharper disable once InconsistentNaming
+        // ReSharper disable once InconsistentNaming
         private static readonly CodecFactory _instance = new CodecFactory();
 
         private readonly Dictionary<object, CodecFactoryEntry> _codecs;
@@ -137,60 +137,72 @@ namespace CSCore.Codecs
         ///     specified file can not be decoded, this method throws an <see cref="NotSupportedException" />.
         /// </summary>
         /// <param name="filename">Filename of the specified file.</param>
+        /// <param name="extension">Extension hint specifying the format of the file, in case it cannot be extracted from the filename.</param>
         /// <returns>Fully initialized <see cref="IWaveSource" /> instance which is able to decode the specified file.</returns>
         /// <exception cref="NotSupportedException">The codec of the specified file is not supported.</exception>
-        public IWaveSource GetCodec(string filename)
+        public IWaveSource GetCodec(string filename, string extension = null)
         {
-            if(String.IsNullOrEmpty(filename))
+            if (String.IsNullOrEmpty(filename))
                 throw new ArgumentNullException("filename");
 
             if (!File.Exists(filename))
                 throw new FileNotFoundException("File not found.", filename);
 
-            string extension = Path.GetExtension(filename).Remove(0, 1); //get the extension without the "dot".
+            if (extension == null)
+                extension = Path.GetExtension(filename).Replace(".", ""); //get the extension without the "dot".
 
-            IWaveSource source = null;
-            if (File.Exists(filename))
+            var stream = File.OpenRead(filename);
+
+            try
             {
-                Stream stream = File.OpenRead(filename);
+                return GetCodec(stream, extension);
+            }
+            catch
+            {
+                stream.Dispose();
+                throw;
+            }
+        }
+
+        /// <summary>
+        ///     Returns a fully initialized <see cref="IWaveSource" /> instance which is able to decode the stream based on the extension hint. If the
+        ///     specified stream can not be decoded, this method throws an <see cref="NotSupportedException" />.
+        /// </summary>
+        /// <param name="stream">Stream to decode.</param>
+        /// <param name="extension">Extension hint specifying the format of the stream.</param>
+        /// <returns>Fully initialized <see cref="IWaveSource" /> instance which is able to decode the specified stream.</returns>
+        /// <exception cref="NotSupportedException">The codec of the specified extension is not supported.</exception>
+        public IWaveSource GetCodec(Stream stream, string extension)
+        {
+            StringBuilder str = null;
+
+            //remove the dot in front of the file extension.
+            foreach (var codecEntry in _codecs)
+            {
                 try
                 {
-                    foreach (var codecEntry in _codecs)
-                    {
-                        try
-                        {
-                            if (
-                                codecEntry.Value.FileExtensions.Any(
-                                    x => x.Equals(extension, StringComparison.OrdinalIgnoreCase)))
-                            {
-                                source = codecEntry.Value.GetCodecAction(stream);
-                                if (source != null)
-                                    break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine(ex.ToString());
-                        }
-                    }
+                    if (codecEntry.Value.FileExtensions.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase)))
+                        return codecEntry.Value.GetCodecAction(stream);
                 }
-                finally
+                catch (Exception ex)
                 {
-                    if (source == null)
-                    {
-                        stream.Dispose();
-                    }
-                    else
-                    {
-                        source = new DisposeFileStreamSource(source, stream);
-                    }
+                    if (str == null)
+                        str = new StringBuilder();
+
+                    str.AppendLine(ex.ToString());
+
+                    Debug.WriteLine(ex.ToString());
                 }
             }
 
-            if (source != null)
-                return source;
+            foreach (var codecEntry in _codecs)
+            {
+                str.AppendLine("Codec: " + codecEntry.Key);
+                foreach (var ext in codecEntry.Value.FileExtensions)
+                    str.AppendLine("Extension: " + ext);
+            }
 
-            return Default(filename);
+            throw new NotSupportedException($"Didn't find suitable codec for {extension}. Errors:\n" + str.ToString());
         }
 
         /// <summary>
