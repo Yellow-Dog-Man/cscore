@@ -251,6 +251,21 @@ namespace CSCore
             if (waveSource == null)
                 throw new ArgumentNullException("waveSource");
 
+            switch (waveSource)
+            {
+                case SampleToIeeeFloat32 floatSource:
+                    return floatSource.Source;
+
+                case SampleToPcm8 pcm8Source:
+                    return pcm8Source.Source;
+
+                case SampleToPcm16 pcm16Source:
+                    return pcm16Source.Source;
+
+                case SampleToPcm24 pcm24Source:
+                    return pcm24Source.Source;
+            }
+
             return WaveToSampleBase.CreateConverter(waveSource);
         }
 
