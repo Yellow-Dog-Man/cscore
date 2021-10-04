@@ -1,5 +1,6 @@
 ﻿using CSCore.Win32;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace CSCore.CoreAudioAPI
@@ -9,7 +10,7 @@ namespace CSCore.CoreAudioAPI
     /// </summary>
     [Guid("D666063F-1587-4E43-81F1-B948E807363F")]
 // ReSharper disable once InconsistentNaming
-    public class MMDevice : ComObject
+    public class MMDevice : ComObject, IEquatable<MMDevice>
     {
         private const string InterfaceName = "IMMDevice";
 
@@ -235,6 +236,44 @@ namespace CSCore.CoreAudioAPI
         public override string ToString()
         {
             return PropertyStore[PropertyStore.FriendlyName].ToString();
+        }
+
+        public bool Equals(MMDevice other)
+        {
+            if (other is null)
+                return false;
+
+            return DeviceID == other.DeviceID &&
+                FriendlyName == other.FriendlyName;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is MMDevice device)
+                return Equals(device);
+
+            return false;
+        }
+
+        public static bool operator ==(MMDevice a, MMDevice b)
+        {
+            if (a is null && b is null)
+                return true;
+
+            if (a is null || b is null)
+                return false;
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(MMDevice a, MMDevice b) => !(a == b);
+
+        public override int GetHashCode()
+        {
+            int hashCode = 908866859;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(DeviceID);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(FriendlyName);
+            return hashCode;
         }
     }
 }
