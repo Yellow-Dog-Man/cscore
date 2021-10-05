@@ -263,6 +263,7 @@
     <Compile Include="Codecs\MP3\Mp3FrameInfo.cs" />
     <Compile Include="Codecs\MP3\Mp3MediafoundationDecoder.cs" />
     <Compile Include="Codecs\MP3\Mp3PaddingFlags.cs" />
+    <Compile Include="Codecs\MP3\MP3Source.cs" />
     <Compile Include="Codecs\MP3\Mp3WebStream.cs" />
     <Compile Include="Codecs\MP3\MpegLayer.cs" />
     <Compile Include="Codecs\MP3\MpegVersion.cs" />
