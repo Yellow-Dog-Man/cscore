@@ -33,11 +33,11 @@ namespace CSCore.Codecs.MP3
 
         public WaveFormat WaveFormat => _waveFormat;
 
-        public long Length => (long)(_mp3Reader.Duration.TotalSeconds * _mp3Reader.SampleRate * _mp3Reader.Channels);
+        public long Length => _mp3Reader.Length;
 
         public long Position
         {
-            get => (long)(_mp3Reader.Time.TotalSeconds * _mp3Reader.SampleRate * _mp3Reader.Channels);
+            get => _mp3Reader.Position;
 
             set
             {
@@ -46,9 +46,7 @@ namespace CSCore.Codecs.MP3
                 if (value < 0 || value > Length)
                     throw new ArgumentOutOfRangeException("value");
 
-                var time = TimeSpan.FromSeconds(value / (double)(_mp3Reader.SampleRate * _mp3Reader.Channels));
-
-                _mp3Reader.Time = time;
+                _mp3Reader.Position = value;
             }
         }
 
