@@ -14,7 +14,8 @@ namespace CSCore.Codecs.OGG
         public int LowerBitrate => _vorbisReader?.LowerBitrate ?? 0;
         public int NominalBitrate => _vorbisReader?.NominalBitrate ?? 0;
         public int UpperBitrate => _vorbisReader?.UpperBitrate ?? 0;
-        public string[] Comments => _vorbisReader?.Tags?.All?.SelectMany(k => k.Value, (kvp, Item) => $"{kvp.Key}={Item}").ToArray();
+        //public string[] Comments => _vorbisReader?.Tags?.All?.SelectMany(k => k.Value, (kvp, Item) => $"{kvp.Key}={Item}").ToArray();
+        public string[] Comments => _vorbisReader?.Comments;
 
         private readonly Stream _stream;
         private readonly VorbisReader _vorbisReader;
@@ -54,7 +55,7 @@ namespace CSCore.Codecs.OGG
         {
             get
             {
-                return CanSeek ? _vorbisReader.SamplePosition * _vorbisReader.Channels : 0;
+                return CanSeek ? _vorbisReader.DecodedPosition * _vorbisReader.Channels : 0;
             }
             set
             {
@@ -63,7 +64,7 @@ namespace CSCore.Codecs.OGG
                 if (value < 0 || value > Length)
                     throw new ArgumentOutOfRangeException("value");
 
-                _vorbisReader.SamplePosition = value / _vorbisReader.Channels;
+                _vorbisReader.DecodedPosition = value / _vorbisReader.Channels;
             }
         }
 
