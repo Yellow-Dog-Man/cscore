@@ -31,7 +31,7 @@ namespace CSCore.Codecs
         private CodecFactory()
         {
             _codecs = new Dictionary<object, CodecFactoryEntry>();
-            Register("mp3", new CodecFactoryEntry(s =>
+            /*Register("mp3", new CodecFactoryEntry(s =>
             {
                 try
                 {
@@ -44,7 +44,7 @@ namespace CSCore.Codecs
                     throw;
                 }
             },
-                "mp3", "mpeg3"));
+                "mp3", "mpeg3"));*/
             Register("wave", new CodecFactoryEntry(s =>
             {
                 IWaveSource res = new WaveFileReader(s);
@@ -65,7 +65,7 @@ namespace CSCore.Codecs
             Register("ogg-vorbis", new CodecFactoryEntry(s => new NVorbisSource(s).ToWaveSource(),
                "ogg"));
 
-            if (AacDecoder.IsSupported)
+            /*if (AacDecoder.IsSupported)
             {
                 Register("aac", new CodecFactoryEntry(s => new AacDecoder(s),
                     "aac", "adt", "adts", "m2ts", "mp2", "3g2", "3gp2", "3gp", "3gpp", "m4a", "m4v", "mp4v", "mp4",
@@ -94,7 +94,7 @@ namespace CSCore.Codecs
             {
                 Register("ddp", new CodecFactoryEntry(s => new DDPDecoder(s),
                     "mp2", "m2ts", "m4a", "m4v", "mp4v", "mp4", "mov", "asf", "wm", "wmv", "wma", "avi", "ac3", "ec3"));
-            }
+            }*/
         }
 
         /// <summary>
