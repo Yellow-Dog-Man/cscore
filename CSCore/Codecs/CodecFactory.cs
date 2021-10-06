@@ -64,8 +64,8 @@ namespace CSCore.Codecs
                 "aiff", "aif", "aifc"));
             Register("ogg-vorbis", new CodecFactoryEntry(s => new NVorbisSource(s).ToWaveSource(),
                "ogg"));
-            Register("mp3", new CodecFactoryEntry(s => new MP3Source(s).ToWaveSource(),
-               "mp3", "mpeg3"));
+            /*Register("mp3", new CodecFactoryEntry(s => new MP3Source(s).ToWaveSource(),
+               "mp3", "mpeg3"));*/
 
             /*if (AacDecoder.IsSupported)
             {

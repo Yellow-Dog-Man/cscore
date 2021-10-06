@@ -28,8 +28,7 @@ namespace CSCore.Codecs.MP3
             _waveFormat = new WaveFormat(_mp3Reader.SampleRate, 32, _mp3Reader.Channels, AudioEncoding.IeeeFloat);
         }
 
-        //public bool CanSeek => _mp3Reader.CanSeek;
-        public bool CanSeek => true;
+        public bool CanSeek => _mp3Reader.CanSeek;
 
         public WaveFormat WaveFormat => _waveFormat;
 
@@ -55,10 +54,10 @@ namespace CSCore.Codecs.MP3
         public void Dispose()
         {
             if (!_disposed)
+            {
                 _mp3Reader.Dispose();
-            else
-                throw new ObjectDisposedException("MP3Reader");
-            _disposed = true;
+                _disposed = true;
+            }
         }
     }
 }
