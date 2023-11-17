@@ -79,12 +79,12 @@ namespace CSCli
             WriterParameters wp = new WriterParameters();
             ReaderParameters rp = new ReaderParameters();
 
-            var strongNameKey = Path.ChangeExtension(filename, "snk");
+            /*var strongNameKey = Path.ChangeExtension(filename, "snk");
             if (File.Exists(strongNameKey))
             {
                 MessageIntegration.Info("Signing with Key : " + strongNameKey);
                 wp.StrongNameKeyPair = new StrongNameKeyPair(File.OpenRead(strongNameKey));
-            }
+            }*/
 
             //check whether the pdbfile has been passed through application parameters
             if (pdbfile == null)
