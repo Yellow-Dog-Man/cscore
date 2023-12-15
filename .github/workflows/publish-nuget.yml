@@ -7,18 +7,27 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
     env:
       VERSION: ${{ github.event.release.tag_name }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET Core
+      - uses: actions/checkout@v4
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+      - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
-      - name: Build with dotnet
-        run: dotnet build OggVorbisEncoder --configuration Release -p:Version=${{ env.VERSION }}
-      - name: Pack nuget Package
-        run: dotnet pack OggVorbisEncoder --configuration Release -p:Version=${{ env.VERSION }} --output nupkgs
-      - name: Push package to nuget
-        run: dotnet nuget push nupkgs\*.nupkg -k ${{ secrets.NUGET_TOKEN }} -s https://api.nuget.org/v3/index.json
+          dotnet-version: '5.0.x'
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1
+        with:
+          nuget-api-key: ${{ secrets.NUGET_TOKEN }}
+      - name: Restore Nuget
+        run: nuget restore CSCore.sln
+      - name: Build Solution
+        run: |
+          msbuild.exe CSCore.sln /p:Platform="Any CPU" /p:Configuration=Release
+      - name: Pack
+        run: nuget pack ./CSCore/CSCore.csproj -OutputDirectory nupkgs -Build -Version ${{ env.VERSION }} -Properties version="${{ env.VERSION }}"
+      - name: Nuget Publish
+        run: nuget push nupkgs\*.nupkg -ApiKey ${{ secrets.NUGET_TOKEN }} -Source https://api.nuget.org/v3/index.json
