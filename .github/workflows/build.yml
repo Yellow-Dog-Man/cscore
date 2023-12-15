@@ -16,8 +16,6 @@ jobs:
   build:
     runs-on: windows-latest
     defaults:
-      run:
-        working-directory: ./CSCore
     steps:
     - uses: actions/checkout@v4
     - name: Setup MSBuild
@@ -27,7 +25,8 @@ jobs:
       with:
         nuget-api-key: ${{ secrets.NUGET_TOKEN }}
     - name: Restore Nuget
-      run: nuget restore CSCore.csproj
+      run: nuget restore CSCore.sln
     - name: Build Solution
       run: |
+        cd ./CSCore
         msbuild.exe CSCore.csproj /nologo
