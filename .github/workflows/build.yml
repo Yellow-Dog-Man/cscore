@@ -15,7 +15,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    defaults:
     steps:
     - uses: actions/checkout@v4
     - name: Setup MSBuild
