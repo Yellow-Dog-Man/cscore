@@ -31,4 +31,4 @@ jobs:
       run: nuget restore CSCore.sln
     - name: Build Solution
       run: |
-        msbuild.exe CSCore.sln /p:Platform="AnyCPU" /p:Configuration=Release
+        msbuild.exe CSCore.sln /p:Platform="Any CPU" /p:Configuration=Release
