@@ -111,8 +111,7 @@
       <HintPath>..\packages\NLayer.1.14.0\lib\netstandard1.3\NLayer.dll</HintPath>
     </Reference>
     <Reference Include="NVorbis, Version=0.10.4.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\NVorbis\NVorbis\bin\Release\net462\NVorbis.dll</HintPath>
+      <HintPath>..\packages\YellowDogMan.NVorbis.0.10.4.1-ydm-0.1.1\lib\net462\NVorbis.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

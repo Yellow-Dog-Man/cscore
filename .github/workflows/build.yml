@@ -28,4 +28,4 @@ jobs:
     - name: Build Solution
       run: |
         cd ./CSCore
-        msbuild.exe CSCore.csproj /nologo
+        msbuild.exe CSCore.csproj /p:Platform="AnyCPU" /p:Configuration=Release
