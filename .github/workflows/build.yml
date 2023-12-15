@@ -26,6 +26,8 @@ jobs:
       uses: NuGet/setup-nuget@v1
       with:
         nuget-api-key: ${{ secrets.NUGET_TOKEN }}
+    - name: Restore Nuget
+      run: nuget restore CSCore.csproj
     - name: Build Solution
       run: |
         msbuild.exe CSCore.csproj /nologo
