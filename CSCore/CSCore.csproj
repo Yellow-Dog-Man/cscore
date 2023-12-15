@@ -4,6 +4,7 @@
     <!-- NUGET META DATA -->
   <PropertyGroup>
     <PackageId>YellowDogMan.CSCore</PackageId>
+    <Id>YellowDogMan.CSCore</Id>
     <RepositoryUrl>https://github.com/Yellow-Dog-Man/cscore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectURL>https://github.com/Yellow-Dog-Man/cscore</PackageProjectURL>
@@ -719,7 +720,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>@echo off &amp; setLocal EnableDELAYedeXpansion
+    <!--<PostBuildEvent>@echo off &amp; setLocal EnableDELAYedeXpansion
       chcp 65001
 
       set errorCode=0
@@ -790,7 +791,7 @@
       :EXIT_ERR
       set errorCode=-1
       goto EXIT
-</PostBuildEvent>
+</PostBuildEvent>-->
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>YellowDogMan.CSCore</id>
+    <authors>filoe, Yellow Dog Man Studios s.r.o.</authors>
+    <description>Fork of CSCore by filoe</description>
+    <version>0.1.0</version>
+  </metadata>
+</package>
