@@ -27,10 +27,8 @@ jobs:
       uses: NuGet/setup-nuget@v1
       with:
         nuget-api-key: ${{ secrets.NUGET_TOKEN }}
-    - uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.12
     - name: Restore Nuget
       run: nuget restore CSCore.sln
     - name: Build Solution
       run: |
-        cd ./CSCore
-        msbuild.exe CSCore.csproj /p:Platform="AnyCPU" /p:Configuration=Release
+        msbuild.exe CSCore.sln /p:Platform="AnyCPU" /p:Configuration=Release
