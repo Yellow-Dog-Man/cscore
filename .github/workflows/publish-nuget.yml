@@ -29,7 +29,7 @@ jobs:
           msbuild.exe CSCore.sln /p:Platform="Any CPU" /p:Configuration=Release
       - name: Pack
         shell: cmd
-        run: nuget pack ./CSCore/CSCore.csproj -OutputDirectory nupkgs -Build -Version ${{ env.VERSION }} -Properties version="${{ env.VERSION }}";Configuration="Release";Platform="AnyCPU"
+        run: nuget pack ./CSCore/CSCore.csproj -OutputDirectory nupkgs -Version ${{ env.VERSION }} -Properties version="${{ env.VERSION }}";Configuration="Release";Platform="AnyCPU"
       - name: Nuget Publish
         shell: cmd
         run: nuget push nupkgs\*.nupkg -ApiKey ${{ secrets.NUGET_TOKEN }} -Source https://api.nuget.org/v3/index.json
