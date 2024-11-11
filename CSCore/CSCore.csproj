@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-    <!-- NUGET META DATA -->
+  <!-- NUGET META DATA -->
   <PropertyGroup>
     <PackageId>YellowDogMan.CSCore</PackageId>
     <Id>YellowDogMan.CSCore</Id>
@@ -213,8 +213,6 @@
     </Compile>
     <Compile Include="ChannelMask.cs" />
     <Compile Include="ChannelMasks.cs" />
-    <Compile Include="Codecs\AAC\AacAudioProfileLevelIndication.cs" />
-    <Compile Include="Codecs\AAC\AacEncoder.cs" />
     <Compile Include="Codecs\AIFF\AiffBinaryReader.cs" />
     <Compile Include="Codecs\AIFF\AiffChunk.cs" />
     <Compile Include="Codecs\AIFF\AiffChunkContainer.cs" />
@@ -224,9 +222,7 @@
     <Compile Include="Codecs\AIFF\FormatVersionChunk.cs" />
     <Compile Include="Codecs\AIFF\SoundDataChunk.cs" />
     <Compile Include="Codecs\CodecFactoryEntry.cs" />
-    <Compile Include="Codecs\AAC\AacDecoder.cs" />
     <Compile Include="Codecs\ConnectionEstablishedEventArgs.cs" />
-    <Compile Include="Codecs\DDP\DDPDecoder.cs" />
     <Compile Include="Codecs\CodecFactory.cs" />
     <Compile Include="Codecs\FLAC\ChannelAssignment.cs" />
     <Compile Include="Codecs\FLAC\FlacException.cs" />
@@ -268,25 +264,7 @@
     </Compile>
     <Compile Include="Codecs\FLAC\SubFrames\FlacSubFrameVerbatim.cs" />
     <Compile Include="Codecs\GetCodecAction.cs" />
-    <Compile Include="Codecs\MP1\Mp1Decoder.cs" />
-    <Compile Include="Codecs\MP2\Mp2Decoder.cs" />
-    <Compile Include="Codecs\MP3\DmoMp3Decoder.cs" />
-    <Compile Include="Codecs\MP3\FrameInfoCollection.cs" />
-    <Compile Include="Codecs\MP3\Mp3ChannelMode.cs" />
-    <Compile Include="Codecs\MP3\Mp3Format.cs" />
-    <Compile Include="Codecs\MP3\Mp3FormatId.cs" />
-    <Compile Include="Codecs\MP3\Mp3Frame.cs" />
-    <Compile Include="Codecs\MP3\Mp3FrameInfo.cs" />
-    <Compile Include="Codecs\MP3\Mp3MediafoundationDecoder.cs" />
-    <Compile Include="Codecs\MP3\Mp3PaddingFlags.cs" />
-    <Compile Include="Codecs\MP3\MP3Source.cs" />
-    <Compile Include="Codecs\MP3\Mp3WebStream.cs" />
-    <Compile Include="Codecs\MP3\MpegLayer.cs" />
-    <Compile Include="Codecs\MP3\MpegVersion.cs" />
-    <Compile Include="Codecs\MP3\XingHeader.cs" />
-    <Compile Include="Codecs\MP3\XingHeaderFlags.cs" />
     <Compile Include="Codecs\OGG\NVorbisSource.cs" />
-    <Compile Include="Codecs\WMA\WmaDecoder.cs" />
     <Compile Include="CoreAudioAPI\AudioCaptureClient.cs" />
     <Compile Include="CoreAudioAPI\AudioClientBufferFlags.cs" />
     <Compile Include="CoreAudioAPI\AudioClientSessionFlags.cs" />
@@ -406,29 +384,6 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IReadableAudioSource.cs" />
     <Compile Include="IWriteable.cs" />
-    <Compile Include="MediaFoundation\CommonAudioDecoderGuids.cs" />
-    <Compile Include="MediaFoundation\IMFCollection.cs" />
-    <Compile Include="MediaFoundation\MediaFoundationAttributes.cs" />
-    <Compile Include="MediaFoundation\MediaFoundationCore.cs" />
-    <Compile Include="MediaFoundation\MediaFoundationDecoder.cs" />
-    <Compile Include="MediaFoundation\MediaFoundationEncoder.cs" />
-    <Compile Include="MediaFoundation\MFActivate.cs" />
-    <Compile Include="MediaFoundation\MFByteStream.cs" />
-    <Compile Include="MediaFoundation\MFByteStreamCapsFlags.cs" />
-    <Compile Include="MediaFoundation\MFByteStreamSeekOrigin.cs" />
-    <Compile Include="MediaFoundation\MFTEnumerator.cs" />
-    <Compile Include="MediaFoundation\NativeMethods.cs" />
-    <Compile Include="MediaFoundation\MFMediaSourceCharacteristics.cs" />
-    <Compile Include="MediaFoundation\MFMediaTypes.cs" />
-    <Compile Include="MediaFoundation\MFSampleFlags.cs" />
-    <Compile Include="MediaFoundation\MFSinkWriter.cs" />
-    <Compile Include="MediaFoundation\MFSinkWriterStatistics.cs" />
-    <Compile Include="MediaFoundation\MFSourceReaderFlags.cs" />
-    <Compile Include="MediaFoundation\MFTCategories.cs" />
-    <Compile Include="MediaFoundation\MFTEnumFlags.cs" />
-    <Compile Include="MediaFoundation\MFTRegisterTypeInfo.cs" />
-    <Compile Include="MediaFoundation\SourceReaderControlFlags.cs" />
-    <Compile Include="MediaFoundation\TranscodeContainerTypes.cs" />
     <Compile Include="MmResult.cs" />
     <Compile Include="SoundIn\RecordingState.cs" />
     <Compile Include="SoundIn\RecordingStoppedEventArgs.cs" />
@@ -568,18 +523,6 @@
     <Compile Include="DSP\DmoChannelResampler.cs" />
     <Compile Include="CoreAudioAPI\MMDevice.cs" />
     <Compile Include="Win32\PropertyStore.cs" />
-    <Compile Include="MediaFoundation\InteropCalls.cs" />
-    <Compile Include="MediaFoundation\MediaFoundationException.cs" />
-    <Compile Include="MediaFoundation\MediaTypeEqualFlags.cs" />
-    <Compile Include="MediaFoundation\MFAttribute.cs" />
-    <Compile Include="MediaFoundation\MFAttributeMatchType.cs" />
-    <Compile Include="MediaFoundation\MFAttributes.cs" />
-    <Compile Include="MediaFoundation\MFAttributeType.cs" />
-    <Compile Include="MediaFoundation\MFMediaBuffer.cs" />
-    <Compile Include="MediaFoundation\MFMediaType.cs" />
-    <Compile Include="MediaFoundation\MFSample.cs" />
-    <Compile Include="MediaFoundation\MFSourceReader.cs" />
-    <Compile Include="MediaFoundation\MFWaveFormatExConvertFlags.cs" />
     <Compile Include="Streams\BlockReadEventArgs.cs" />
     <Compile Include="Streams\MonoToStereoSource.cs" />
     <Compile Include="Streams\NotificationSource.cs" />
