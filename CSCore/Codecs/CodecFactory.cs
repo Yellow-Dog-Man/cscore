@@ -4,17 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using CSCore.Codecs.AAC;
 using CSCore.Codecs.AIFF;
-using CSCore.Codecs.DDP;
 using CSCore.Codecs.FLAC;
-using CSCore.Codecs.MP1;
-using CSCore.Codecs.MP2;
-using CSCore.Codecs.MP3;
 using CSCore.Codecs.WAV;
-using CSCore.Codecs.WMA;
 using CSCore.Codecs.OGG;
-using CSCore.MediaFoundation;
 
 namespace CSCore.Codecs
 {
@@ -53,7 +46,7 @@ namespace CSCore.Codecs
                     res.WaveFormat.WaveFormatTag != AudioEncoding.Extensible)
                 {
                     res.Dispose();
-                    res = new MediaFoundationDecoder(s);
+                    res = null;
                 }
                 return res;
             },
@@ -226,7 +219,7 @@ namespace CSCore.Codecs
                 if (!String.IsNullOrEmpty(filename))
                     return GetCodec(filename);
 
-                return OpenWebStream(uri.ToString());
+                return null;
             }
             catch (IOException)
             {
@@ -241,33 +234,6 @@ namespace CSCore.Codecs
         internal IWaveSource GetCodec(Stream stream, object key)
         {
             return _codecs[key].GetCodecAction(stream);
-        }
-
-        private IWaveSource OpenWebStream(string url)
-        {
-            try
-            {
-                return Default(url);
-            }
-            catch (Exception)
-            {
-                try
-                {
-#pragma warning disable 618
-                    return new Mp3WebStream(url, false);
-#pragma warning restore 618
-                }
-                catch (Exception)
-                {
-                    Debug.WriteLine("No mp3 webstream.");
-                }
-                throw; //better throw the exception of the MediaFoundationDecoder. We just try to use the Mp3WebStream class since a few mp3 streams are not supported by the mediafoundation.
-            }
-        }
-
-        private static IWaveSource Default(string url)
-        {
-            return new MediaFoundationDecoder(url);
         }
 
         /// <summary>
