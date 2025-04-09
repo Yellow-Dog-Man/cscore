@@ -227,6 +227,8 @@ namespace CSCore.SoundOut
             }
         }
 
+        public WaveFormat ActualOutputFormat { get; private set; }
+
         /// <summary>
         ///     Occurs when the playback stops.
         /// </summary>
@@ -324,6 +326,8 @@ namespace CSCore.SoundOut
 
             lock (_lockObj)
             {
+                ActualOutputFormat = null;
+
                 CheckForDisposed();
                 //don't check for isinitialized here (we don't want the Dispose method to throw an exception)
 
@@ -644,6 +648,8 @@ namespace CSCore.SoundOut
             _audioClient = AudioClient.FromMMDevice(Device);
             _outputFormat = SetupWaveFormat(_source, _audioClient);
 
+            ActualOutputFormat = _outputFormat;
+
             long latency = _latency * reftimesPerMillisecond;
             AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED_TRY_AGAIN:
             try
@@ -812,7 +818,7 @@ namespace CSCore.SoundOut
                     finalFormat = closestMatch;
 
                 //todo: test channel matrix conversion
-                ChannelMatrix channelMatrix = null;
+                /*ChannelMatrix channelMatrix = null;
                 if (UseChannelMixingMatrices)
                 {
                     try
@@ -830,7 +836,7 @@ namespace CSCore.SoundOut
                 resampler.Quality = 60;
 
                 _source = resampler;
-                _createdResampler = true;
+                _createdResampler = true;*/
 
                 return finalFormat;
             }
