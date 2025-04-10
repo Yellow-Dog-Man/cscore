@@ -326,8 +326,6 @@ namespace CSCore.SoundOut
 
             lock (_lockObj)
             {
-                ActualOutputFormat = null;
-
                 CheckForDisposed();
                 //don't check for isinitialized here (we don't want the Dispose method to throw an exception)
 
