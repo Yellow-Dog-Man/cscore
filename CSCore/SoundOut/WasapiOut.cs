@@ -227,6 +227,9 @@ namespace CSCore.SoundOut
             }
         }
 
+        public int ActualBufferSize { get; private set; }
+        public int CurrentPadding { get; private set; }
+
         public WaveFormat ActualOutputFormat { get; private set; }
 
         public Action<WasapiOut> OnPlaybackUpdateBegin;
@@ -495,6 +498,8 @@ namespace CSCore.SoundOut
                             frameSize = _outputFormat.Channels * _outputFormat.BytesPerSample;
 
                             buffer = new byte[bufferSize * frameSize];
+
+                            ActualBufferSize = bufferSize;
                         }
 
                         int waitResult = WaitHandle.WaitAny(eventWaitHandleArray, waitTime);
@@ -560,6 +565,7 @@ namespace CSCore.SoundOut
                                 if (_audioClient.GetCurrentPaddingNative(out padding) != (int)HResult.S_OK)
                                     continue;
 
+                                CurrentPadding = padding;
                             }
 
                             playbackEventRaised = true;
