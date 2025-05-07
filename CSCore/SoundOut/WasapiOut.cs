@@ -229,6 +229,9 @@ namespace CSCore.SoundOut
 
         public WaveFormat ActualOutputFormat { get; private set; }
 
+        public Action<WasapiOut> OnPlaybackUpdateBegin;
+        public Action<WasapiOut> OnPlaybackUpdateEnd;
+
         /// <summary>
         ///     Occurs when the playback stops.
         /// </summary>
@@ -477,6 +480,8 @@ namespace CSCore.SoundOut
                 int bufferSize = 0;
                 int frameSize = 0;
 
+                bool playbackEventRaised = false;
+
                 while (PlaybackState != PlaybackState.Stopped)
                 {
                     try
@@ -557,6 +562,9 @@ namespace CSCore.SoundOut
 
                             }
 
+                            playbackEventRaised = true;
+                            OnPlaybackUpdateBegin?.Invoke(this);
+
                             int framesReadyToFill = bufferSize - padding;
 
                             //avoid conversion errors
@@ -567,6 +575,9 @@ namespace CSCore.SoundOut
 
                             if (!FeedBuffer(_renderClient, buffer, framesReadyToFill, frameSize))
                                 _playbackState = PlaybackState.Stopped; //source is eof
+
+                            OnPlaybackUpdateEnd?.Invoke(this);
+                            playbackEventRaised = false;
 
                         }
                         else if (PlaybackState == PlaybackState.Paused &&
@@ -585,6 +596,14 @@ namespace CSCore.SoundOut
                         if (ex.ErrorCode != (int)HResult.AUDCLNT_E_DEVICE_INVALIDATED)
                         {
                             throw;
+                        }
+                    }
+                    finally
+                    {
+                        if(playbackEventRaised)
+                        {
+                            OnPlaybackUpdateEnd?.Invoke(this);
+                            playbackEventRaised = false;
                         }
                     }
                 }
