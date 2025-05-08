@@ -31,6 +31,7 @@ namespace CSCore.SoundOut
         private bool _isInitialized;
 
         private int _latency;
+        private int? _computeLatency;
         private WaveFormat _outputFormat;
         private volatile PlaybackState _playbackState;
         private Thread _playbackThread;
@@ -224,6 +225,21 @@ namespace CSCore.SoundOut
                 if (value <= 0)
                     throw new ArgumentOutOfRangeException("value");
                 _latency = value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the latency override used to calculate buffer refresh intervals.
+        /// The <see cref="ComputeLatency" /> property has to be set before initializing.
+        /// </summary>
+        public int? ComputeLatency
+        {
+            get { return _computeLatency; }
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException("value");
+                _computeLatency = value;
             }
         }
 
@@ -442,10 +458,13 @@ namespace CSCore.SoundOut
 
         private void PlaybackProc(object playbackStartedEventWaithandle)
         {
+            var intervalLatency = _computeLatency ?? _latency;
+
             Exception exception = null;
             IntPtr avrtHandle = IntPtr.Zero;
-            string mmcssType = Latency > 25 ? "Audio" : "Pro Audio";
+            string mmcssType = intervalLatency > 25 ? "Audio" : "Pro Audio";
             int taskIndex = 0;
+
             try
             {
                 //we need a least one wait handle for the streamrouting stuff
@@ -455,7 +474,7 @@ namespace CSCore.SoundOut
                 //the wait time for event sync has the default value of latency * 3
                 //if we're using a pure render loop, the wait time has to be much lower
                 //lets say latency / 8. otherwise we might loose too much time
-                int waitTime = _eventSync ? _latency * 3 : _latency / 8;
+                int waitTime = _eventSync ? intervalLatency * 3 : intervalLatency / 8;
                 waitTime = Math.Max(1, waitTime);
 
 
@@ -621,7 +640,7 @@ namespace CSCore.SoundOut
                 }
 
 
-                Thread.Sleep(_latency / 2);
+                Thread.Sleep(intervalLatency / 2);
 
                 _audioClient.Stop();
                 _audioClient.Reset();
