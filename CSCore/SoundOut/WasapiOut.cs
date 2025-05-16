@@ -39,6 +39,7 @@ namespace CSCore.SoundOut
         private VolumeSource _volumeSource;
         private IWaveSource _source;
         private StreamRoutingOptions _streamRoutingOptions = StreamRoutingOptions.OnFormatChange | StreamRoutingOptions.OnDeviceDisconnect;
+        private bool _abortOnZero = true;
 
         private Role _deviceRole = DeviceRoleNotSet;
 
@@ -241,6 +242,16 @@ namespace CSCore.SoundOut
                     throw new ArgumentOutOfRangeException("value");
                 _computeLatency = value;
             }
+        }
+
+        /// <summary>
+        /// When true, the output will be aborted when the data stream returns zero read bytes.
+        /// Otherwise it will keep  attempting to read data until it has more.
+        /// </summary>
+        public bool AbortOnZeroData
+        {
+            get { return _abortOnZero; }
+            set { _abortOnZero = value; }
         }
 
         public int ActualBufferSize { get; private set; }
@@ -949,9 +960,10 @@ namespace CSCore.SoundOut
 
             //get the requested data
             int read = _source.Read(buffer, 0, count);
-            //if the source did not provide enough data, we abort the playback by returning false
+            //if the source did not provide enough data, we abort the playback by returning false when abort is true
+            //otherwise we just skip feedint the data in and try again next time
             if (read <= 0)
-                return false;
+                return !AbortOnZeroData;
 
             //calculate the number of FRAMES to request
             int actualNumFramesCount = read / frameSize;
