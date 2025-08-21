@@ -39,6 +39,8 @@ namespace CSCore.SoundOut
         private IWaveSource _source;
         private StreamRoutingOptions _streamRoutingOptions = StreamRoutingOptions.OnFormatChange | StreamRoutingOptions.OnDeviceDisconnect;
 
+        private Guid _sessionGuid;
+
         private Role _deviceRole = DeviceRoleNotSet;
 
         private readonly object _lockObj = new object();
@@ -67,9 +69,10 @@ namespace CSCore.SoundOut
         ///     playback for the specified device is possible at once.
         /// </param>
         /// <param name="latency">Latency of the playback specified in milliseconds.</param>
-        public WasapiOut(bool eventSync, AudioClientShareMode shareMode, int latency)
+        public WasapiOut(bool eventSync, AudioClientShareMode shareMode, int latency, Guid sessionGuid = default)
             : this(eventSync, shareMode, latency, ThreadPriority.AboveNormal)
         {
+            _sessionGuid = sessionGuid;
         }
 
         /// <summary>
@@ -655,18 +658,18 @@ namespace CSCore.SoundOut
 
                 if (!_eventSync)
                     _audioClient.Initialize(_shareMode, AudioClientStreamFlags.None, latency, 0, _outputFormat,
-                        Guid.Empty);
+                        _sessionGuid);
                 else //event sync
                 {
                     if (_shareMode == AudioClientShareMode.Exclusive) //exclusive
                     {
                         _audioClient.Initialize(_shareMode, AudioClientStreamFlags.StreamFlagsEventCallback, latency,
-                            latency, _outputFormat, Guid.Empty);
+                            latency, _outputFormat, _sessionGuid);
                     }
                     else //shared
                     {
                         _audioClient.Initialize(_shareMode, AudioClientStreamFlags.StreamFlagsEventCallback, 0, 0,
-                            _outputFormat, Guid.Empty);
+                            _outputFormat, _sessionGuid);
                         //latency = (int)(_audioClient.StreamLatency / reftimesPerMillisecond);
                     }
                 }
