@@ -31,6 +31,7 @@ namespace CSCore.SoundOut
         private bool _isInitialized;
 
         private int _latency;
+        private int? _computeLatency;
         private WaveFormat _outputFormat;
         private volatile PlaybackState _playbackState;
         private Thread _playbackThread;
@@ -38,6 +39,7 @@ namespace CSCore.SoundOut
         private VolumeSource _volumeSource;
         private IWaveSource _source;
         private StreamRoutingOptions _streamRoutingOptions = StreamRoutingOptions.OnFormatChange | StreamRoutingOptions.OnDeviceDisconnect;
+        private bool _abortOnZero = true;
 
         private Guid _sessionGuid;
 
@@ -230,7 +232,38 @@ namespace CSCore.SoundOut
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the latency override used to calculate buffer refresh intervals.
+        /// The <see cref="ComputeLatency" /> property has to be set before initializing.
+        /// </summary>
+        public int? ComputeLatency
+        {
+            get { return _computeLatency; }
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException("value");
+                _computeLatency = value;
+            }
+        }
+
+        /// <summary>
+        /// When true, the output will be aborted when the data stream returns zero read bytes.
+        /// Otherwise it will keep  attempting to read data until it has more.
+        /// </summary>
+        public bool AbortOnZeroData
+        {
+            get { return _abortOnZero; }
+            set { _abortOnZero = value; }
+        }
+
+        public int ActualBufferSize { get; private set; }
+        public int CurrentPadding { get; private set; }
+
         public WaveFormat ActualOutputFormat { get; private set; }
+
+        public Action<WasapiOut> OnPlaybackUpdateBegin;
+        public Action<WasapiOut> OnPlaybackUpdateEnd;
 
         /// <summary>
         ///     Occurs when the playback stops.
@@ -439,10 +472,13 @@ namespace CSCore.SoundOut
 
         private void PlaybackProc(object playbackStartedEventWaithandle)
         {
+            var intervalLatency = _computeLatency ?? _latency;
+
             Exception exception = null;
             IntPtr avrtHandle = IntPtr.Zero;
-            string mmcssType = Latency > 25 ? "Audio" : "Pro Audio";
+            string mmcssType = intervalLatency > 25 ? "Audio" : "Pro Audio";
             int taskIndex = 0;
+
             try
             {
                 //we need a least one wait handle for the streamrouting stuff
@@ -452,7 +488,7 @@ namespace CSCore.SoundOut
                 //the wait time for event sync has the default value of latency * 3
                 //if we're using a pure render loop, the wait time has to be much lower
                 //lets say latency / 8. otherwise we might loose too much time
-                int waitTime = _eventSync ? _latency * 3 : _latency / 8;
+                int waitTime = _eventSync ? intervalLatency * 3 : intervalLatency / 8;
                 waitTime = Math.Max(1, waitTime);
 
 
@@ -480,6 +516,8 @@ namespace CSCore.SoundOut
                 int bufferSize = 0;
                 int frameSize = 0;
 
+                bool playbackEventRaised = false;
+
                 while (PlaybackState != PlaybackState.Stopped)
                 {
                     try
@@ -493,6 +531,8 @@ namespace CSCore.SoundOut
                             frameSize = _outputFormat.Channels * _outputFormat.BytesPerSample;
 
                             buffer = new byte[bufferSize * frameSize];
+
+                            ActualBufferSize = bufferSize;
                         }
 
                         int waitResult = WaitHandle.WaitAny(eventWaitHandleArray, waitTime);
@@ -558,7 +598,11 @@ namespace CSCore.SoundOut
                                 if (_audioClient.GetCurrentPaddingNative(out padding) != (int)HResult.S_OK)
                                     continue;
 
+                                CurrentPadding = padding;
                             }
+
+                            playbackEventRaised = true;
+                            OnPlaybackUpdateBegin?.Invoke(this);
 
                             int framesReadyToFill = bufferSize - padding;
 
@@ -570,6 +614,9 @@ namespace CSCore.SoundOut
 
                             if (!FeedBuffer(_renderClient, buffer, framesReadyToFill, frameSize))
                                 _playbackState = PlaybackState.Stopped; //source is eof
+
+                            OnPlaybackUpdateEnd?.Invoke(this);
+                            playbackEventRaised = false;
 
                         }
                         else if (PlaybackState == PlaybackState.Paused &&
@@ -590,6 +637,14 @@ namespace CSCore.SoundOut
                             throw;
                         }
                     }
+                    finally
+                    {
+                        if(playbackEventRaised)
+                        {
+                            OnPlaybackUpdateEnd?.Invoke(this);
+                            playbackEventRaised = false;
+                        }
+                    }
                 }
 
                 if (avrtHandle != IntPtr.Zero)
@@ -599,7 +654,7 @@ namespace CSCore.SoundOut
                 }
 
 
-                Thread.Sleep(_latency / 2);
+                Thread.Sleep(intervalLatency / 2);
 
                 _audioClient.Stop();
                 _audioClient.Reset();
@@ -908,9 +963,10 @@ namespace CSCore.SoundOut
 
             //get the requested data
             int read = _source.Read(buffer, 0, count);
-            //if the source did not provide enough data, we abort the playback by returning false
+            //if the source did not provide enough data, we abort the playback by returning false when abort is true
+            //otherwise we just skip feedint the data in and try again next time
             if (read <= 0)
-                return false;
+                return !AbortOnZeroData;
 
             //calculate the number of FRAMES to request
             int actualNumFramesCount = read / frameSize;
