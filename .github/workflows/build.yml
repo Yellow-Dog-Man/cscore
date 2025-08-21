@@ -27,10 +27,6 @@ jobs:
       uses: NuGet/setup-nuget@v1
       with:
         nuget-api-key: ${{ secrets.NUGET_TOKEN }}
-    - name: Install .NET Framework 4.0/4.5 Developer Packs
-      run: |
-        choco install netfx-4.0.1-devpack -y
-        choco install netfx-4.5.2-devpack -y
     - name: Restore Nuget
       run: nuget restore CSCore.sln
     - name: Build Solution
