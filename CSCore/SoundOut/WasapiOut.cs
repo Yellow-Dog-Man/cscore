@@ -42,6 +42,7 @@ namespace CSCore.SoundOut
         private bool _abortOnZero = true;
 
         private Guid _sessionGuid;
+        private bool _crossProcessSession;
 
         private Role _deviceRole = DeviceRoleNotSet;
 
@@ -71,10 +72,11 @@ namespace CSCore.SoundOut
         ///     playback for the specified device is possible at once.
         /// </param>
         /// <param name="latency">Latency of the playback specified in milliseconds.</param>
-        public WasapiOut(bool eventSync, AudioClientShareMode shareMode, int latency, Guid sessionGuid = default)
+        public WasapiOut(bool eventSync, AudioClientShareMode shareMode, int latency, Guid sessionGuid = default, bool crossProcessSession = false)
             : this(eventSync, shareMode, latency, ThreadPriority.AboveNormal)
         {
             _sessionGuid = sessionGuid;
+            _crossProcessSession = crossProcessSession;
         }
 
         /// <summary>
@@ -697,6 +699,14 @@ namespace CSCore.SoundOut
                 throw new InvalidOperationException("WasapiOut is not initialized.");
         }
 
+        AudioClientStreamFlags ProcessFlags(AudioClientStreamFlags flags)
+        {
+            if (_crossProcessSession)
+                flags |= AudioClientStreamFlags.StreamFlagsCrossProcess;
+
+            return flags;
+        }
+
         private void InitializeInternal()
         {
             const int reftimesPerMillisecond = 10000;
@@ -712,18 +722,18 @@ namespace CSCore.SoundOut
             {
 
                 if (!_eventSync)
-                    _audioClient.Initialize(_shareMode, AudioClientStreamFlags.None, latency, 0, _outputFormat,
+                    _audioClient.Initialize(_shareMode, ProcessFlags(AudioClientStreamFlags.None), latency, 0, _outputFormat,
                         _sessionGuid);
                 else //event sync
                 {
                     if (_shareMode == AudioClientShareMode.Exclusive) //exclusive
                     {
-                        _audioClient.Initialize(_shareMode, AudioClientStreamFlags.StreamFlagsEventCallback, latency,
+                        _audioClient.Initialize(_shareMode, ProcessFlags(AudioClientStreamFlags.StreamFlagsEventCallback), latency,
                             latency, _outputFormat, _sessionGuid);
                     }
                     else //shared
                     {
-                        _audioClient.Initialize(_shareMode, AudioClientStreamFlags.StreamFlagsEventCallback, 0, 0,
+                        _audioClient.Initialize(_shareMode, ProcessFlags(AudioClientStreamFlags.StreamFlagsEventCallback), 0, 0,
                             _outputFormat, _sessionGuid);
                         //latency = (int)(_audioClient.StreamLatency / reftimesPerMillisecond);
                     }
